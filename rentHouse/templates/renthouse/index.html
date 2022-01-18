@@ -1,5 +1,32 @@
 {% extends "base.html" %}
 
 {% block body %}
+    
+    
+    <style>
+        .houseIdx{
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .houseIdx button{
+            background-color: navy;
+            color: aliceblue;
+            border: 1px solid transparent;
+            padding: 15px;
+            border-radius: 30px;
+            margin: 0px 10px 0px 10px;
+            cursor: pointer;
+        }
+    </style>
+    <main class='houseIdx'>
+        <button>
+            Upload House 
+        </button>
 
+        <button>
+            Search House
+        </button>
+    </main>
 {% endblock %}
