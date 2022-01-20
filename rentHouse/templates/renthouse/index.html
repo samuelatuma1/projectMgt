@@ -19,14 +19,25 @@
             margin: 0px 10px 0px 10px;
             cursor: pointer;
         }
+        #sicon{
+            transform: rotateZ(40deg) scale(1.5);
+            color: teal;
+            display: inline-block;
+        }
+        button a{
+            text-decoration: none;
+            color: inherit;
+        }
     </style>
     <main class='houseIdx'>
         <button>
-            Upload House 
+            <a href="{% url 'renthouse:upload_house' %}">
+                Upload House 
+            </a>    
         </button>
 
         <button>
-            Search House
+            Search House  <span id='sicon'>&#9906;</span>
         </button>
     </main>
 {% endblock %}
