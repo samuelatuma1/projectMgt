@@ -32,7 +32,17 @@ class UploadHouse(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='houses')
     photo = models.ImageField(upload_to='houses/')
     desc = models.TextField()
-    state = models.ForeignKey(State)
+    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name='houses')
+    
     house_type = models.ForeignKey(HouseType, on_delete=models.CASCADE)
     price = models.IntegerField()
+    
+    bill_period = [("monthly", "monthly"), ("quaterly", "quaterly"), ("yearly", "yearly")]
+    
+    billed = models.CharField(max_length=15, choices=bill_period, default='yearly')
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    
+    display = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return f"{self.house_type} in {self.region}, {self.state} by {self.user}"
