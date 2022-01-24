@@ -36,10 +36,14 @@
         }
         form input{
             padding: 10px;
+            display: block;
             border-radius: 20px;
             width: 80%;
-            display: block;
             border: 1px solid rgb(232, 229, 229);
+        }
+        nav a{
+            color: inherit;
+            text-decoration: none;
         }
         form > p{
             width: 80%;
@@ -58,10 +62,6 @@
             transition: 0.5s linear;
             cursor: pointer;
 
-        }
-        nav a{
-            color: inherit;
-            text-decoration: none;
         }
         #signInOrUp button:hover{
             box-shadow: 0px 3px 10px 0px navy;
@@ -93,30 +93,30 @@
 </head>
 <body>
     <nav>
-        <li>
-            <a href='{% url "renthouse:sign_up" %}'>Register</a>
+        <li id='active'>
+            Register
         </li>
-        <li id='active'>Sign in</li>
+        <li >
+            <a href='{% url "renthouse:sign_in" %}'>Sign in</a>
+        </li>
     </nav>
 
-    <!--Error messsage-->
-    {% if msg %}
-        <p id='err_msg'><span>*</span>{{ msg }}</p>
+    {% if err_msg %}
+        <p id='err_msg'><span>*</span>{{ err_msg }}</p>
     {% endif %}
-    
     <form method="POST">
-        
-        
+        <!--Error messsage-->
+        {% if msg %}
+            {{msg}}
+        {% endif %}
 
         {% csrf_token %}
         
         {{ form.as_p }}
-        {% if next_page %}
-            <input type='hidden' name='next' value='{{ next_page }}'>
-        {% endif %}
+        
         <div id='signInOrUp'>
-            <button>Sign In</button>
-            <p>Don't have an account yet? <a href='{% url "renthouse:sign_up" %}'>Sign Up Here</a></p>
+            <button>Sign Up</button>
+            <p>Already a member? <a href='{% url "renthouse:sign_in" %}'>Sign in</a></p>
         </div>
     </form>
 </body>
