@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{%  block body %}
+    <script>
+        // Show id_region on selection of a state
+        document.addEventListener("DOMContentLoaded", () => {
+            let btn = document.querySelector("form button")
+            btn.disabled = true
+            const id_state = document.querySelector("#id_state")
+            id_state.onchange = (e) => {
+                // bt.disabled = false
+                let state_id = id_state.value
+                fetch(`{% url "renthouse:state" %}?id=${state_id}`).then(res => res.json())
+                .then(regions => showRegions(regions.regions))
+            }
+
+            function showRegions(regions){
+                //  Show regions related to the state user inputed
+                const select = document.createElement("select")
+                    select.name = 'region'
+                    select.required = true
+                    select.id = "id_region"
+
+                for(let region of regions){
+                    const option = document.createElement("option")
+                    option.value = region.id
+                    option.innerText = region.name
+                    select.appendChild(option)
+                }
+                const regions_div = document.querySelector("#regions_div")
+                regions_div.innerHTML = "Region: "
+        
+                
+                regions_div.appendChild(select)
+                btn.disabled = false
+            }
+
+            const form = document.querySelector("form")
+            // Make sure region is filled out before submission
+            form.onsubmit = (e) => {
+                const regions_div = document.querySelector("#regions_div select")
+                if (regions_div == null || regions_div == ''){
+                    alert("It seems you haven't filled out the region option")
+                    e.preventDefault()
+                }
+            }
+        })
+    </script>
+    <main class='body'>
+        
+        {% include "renthouse/nav.html" %}
+        
+        <div class="main">
+            
+            {% if msg %}
+                <li>{{ msg }}</li>
+            {% endif %}
+            <form method='POST' enctype='multipart/form-data'>
+                <h1>Upload House</h1>
+                {% csrf_token %}
+                {{ form}}
+                <div id='regions_div'></div>
+                <button>Upload House</button>
+            </form>
+        </div>
+    </main>
+
+    <style>
+        .main{
+            padding: 20px;
+
+        }
+        form > input, form select, textarea{
+            display: block;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid aliceblue;
+            margin: 5px;
+            background-color: aliceblue;
+            
+        }
+        button{
+            padding: 10px;
+            background-color: white;
+            border: transparent;
+            color: lightseagreen;
+            border-radius: 3px;
+            box-shadow: 0px 0px 10px 0px lightseagreen;
+        }
+        button:disabled {
+            color: maroon;
+            box-shadow: 0px 0px 10px 0px maroon;
+
+        }
+    </style>
+{% endblock %}

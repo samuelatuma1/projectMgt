@@ -7,10 +7,7 @@ def index(request):
     # raise Http404("Not found oo")
     return render(request, 'renthouse/index.html', {"active": "house"})
 
-def upload_house(request):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('renthouse:sign_in', args=['upload_house']))
-    return HttpResponse("Upload House")
+
 
 
 class SignInForm(forms.Form):
@@ -119,3 +116,75 @@ def sign_up(request):
 
     return render(request, 'auth/signup.html', {'form': form})
 
+from .models import UploadHouse, State, Region, HouseType
+
+class UploadForm(forms.ModelForm):
+    class Meta:
+        model = UploadHouse
+        exclude = ["user", "uploaded", "region"]
+        
+def upload_house(request):
+    
+    if request.user.is_authenticated:
+        
+        form = UploadForm()
+        active='upload'
+        
+        if request.method == 'POST':
+            form = UploadForm(data=request.POST, files=request.FILES)
+            if form.is_valid():
+                print(form.cleaned_data)
+                region_id = int(request.POST.get("region"))
+                selected_region = Region.objects.get(pk=region_id)
+                if selected_region:
+                    print(selected_region)
+                    new_house = form.save(commit=False)
+                    new_house.user = request.user
+                    new_house.region = selected_region
+                    print(new_house)
+                    
+                    # What to do if form is valid (submitted succefully).
+                    new_house.save()
+                    #new_house.save()
+                    msg= f"{new_house} added successfully"
+                # What to do if no selected region
+                else:
+                    msg = "It seems you submitted a house without a region"
+                    
+                return render(request, 'rentHouse/upload_house.html', {"form": form, 'active': active, "msg": msg})
+            # What to do if form is invalid
+            msg = "Invalid submitted form. Please, fill out the form properly"
+            
+            return render(request, 'rentHouse/upload_house.html', {"form": form, 'active': active, "msg": msg})
+            
+        return render(request, 'rentHouse/upload_house.html', {"form": form, 'active': active})
+    return HttpResponseRedirect(reverse('renthouse:sign_in', args=['upload_house']))
+
+
+
+def state_regions(request):
+    id = request.GET.get('id')
+    if id.isnumeric():
+        id = int(id)
+        
+        # Convert querySet to list
+        regions = Region.objects.filter(state__id = id).all()
+        regions = list(regions.values())
+    else:
+        regions = []
+    return JsonResponse({'regions': regions})
+
+
+def view_uploads(request):
+    if request.user.is_active:
+        active = "viewuploads"
+        
+        context = {"active": active}
+        return render(request, "rentHouse/view_uploads.html", context)
+        
+    else:
+        return HttpResponseRedirect(reverse("renthouse:sign_in", args=["view_uploads"]))
+    
+
+    
+    
